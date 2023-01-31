@@ -1,0 +1,22 @@
+.root {
+  background: rgb(46, 228, 241);
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  height: 40px;
+  width: 260px;
+
+  border: none;
+  outline: none;
+  border-radius: 10px;
+}
+
+.root.short {
+  width: 40px;
+}
+
+.root:hover {
+  background: rgb(37, 156, 165);
+}

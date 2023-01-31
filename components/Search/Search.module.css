@@ -1,0 +1,10 @@
+.root {
+    border: 2px solid #fff;
+    border-radius: 10px;
+    height: 40px;
+    width: 10rem;
+    outline: none;
+    line-height: 20px;
+    font-size: .6rem;
+    padding: 10px 15px;
+}
