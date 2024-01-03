@@ -1,18 +1,18 @@
-import PeopleApi from '@api/PeopleApi';
 import { Paggination } from '@components/Paggination';
 import { DataList } from '@components/DataList';
-import { PeopleItemModel } from '@styles/interfaces';
+import { FilmItemModel } from '@styles/interfaces';
 import { BaseParams, FilterResult, Replace } from '@typings/base';
 import { serverError } from '@utils/notifications';
 import { GetServerSidePropsContext, NextPage } from 'next';
 import { useEffect } from 'react';
+import FilmsApi from '@api/FilmsApi';
 
-type IndexProps = {
-  peoples?: FilterResult<PeopleItemModel>;
+type FilmsProps = {
+  films?: FilterResult<FilmItemModel>;
   isServerError: string;
 };
 
-const Index: NextPage<IndexProps> = ({ peoples, isServerError }) => {
+const Films: NextPage<FilmsProps> = ({ films, isServerError }) => {
   useEffect(() => {
     if (isServerError) {
       serverError(isServerError);
@@ -21,26 +21,26 @@ const Index: NextPage<IndexProps> = ({ peoples, isServerError }) => {
 
   return (
     <>
-      <DataList data={peoples?.results} />
-      <Paggination count={peoples?.count} />
+      <DataList data={films?.results} />
+      <Paggination count={films?.count} />
     </>
   );
 };
 
-export default Index;
+export default Films;
 
 export const getServerSideProps = async (
   ctx: Replace<GetServerSidePropsContext, 'query', BaseParams>,
 ) => {
   const { query } = ctx;
 
-  const peoples = await PeopleApi.getPeoplesList(query);
-  if (!peoples.isError)
+  const films = await FilmsApi.getFilmsList(query);
+  if (!films.isError)
     return {
-      props: { peoples },
+      props: { films },
     };
 
   return {
-    props: { isServerError: peoples.message },
+    props: { isServerError: films.message },
   };
 };

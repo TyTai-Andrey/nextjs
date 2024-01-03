@@ -1,0 +1,21 @@
+.root {
+  list-style: none;
+
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  margin-top: auto;
+}
+
+.root li button {
+  display: block;
+  padding: 5px;
+  height: 45px;
+  aspect-ratio: 1/1;
+}
+.root li:not(:last-child) {
+  margin-right: 15px;
+}

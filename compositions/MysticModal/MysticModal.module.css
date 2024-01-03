@@ -1,0 +1,7 @@
+.root {
+  min-height: 80dvh;
+  min-width: 50dvw;
+  max-width: 70dvw;
+
+  padding: 40px;
+}

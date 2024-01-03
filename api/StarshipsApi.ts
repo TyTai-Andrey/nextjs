@@ -1,5 +1,5 @@
 // import qs from 'qs';
-import { PeopleItemModel } from '@styles/interfaces';
+import { StarshipItemModel } from '@styles/interfaces';
 import { BaseParams, ErrorResponse, FilterResult } from '../typings/base';
 import { AxiosRequestConfig } from 'axios';
 
@@ -8,30 +8,33 @@ import { AxiosRequestConfig } from 'axios';
 // Types
 import BaseApi from './BaseApi';
 
-export default class PeopleApi {
-  static async getPeoplesList(
+export default class StarshipsApi {
+  static async getStarshipsList(
     params?: BaseParams,
-  ): Promise<FilterResult<PeopleItemModel> | ErrorResponse> {
+  ): Promise<FilterResult<StarshipItemModel> | ErrorResponse> {
     const client = BaseApi.getSwapiClient();
 
     const options: AxiosRequestConfig = {
-      url: '/people/',
+      url: '/starships/',
       method: 'GET',
       params,
     };
 
-    return client(options)
-      .then((response) => response.data)
-      .catch(({ message }) => ({ isError: true, message }));
+    try {
+      const response = await client(options);
+      return response.data;
+    } catch ({ message }) {
+      return { isError: true, message };
+    }
   }
 
-  static async getOnePeople(
+  static async getOneStarship(
     id: string | number,
-  ): Promise<(PeopleItemModel & { isError: false }) | ErrorResponse> {
+  ): Promise<(StarshipItemModel & { isError: false }) | ErrorResponse> {
     const client = BaseApi.getSwapiClient();
 
     return client
-      .get(`/people/${id}`)
+      .get(`/starships/${id}`)
       .then((response) => response.data)
       .catch(({ message }) => ({ isError: true, message }));
   }

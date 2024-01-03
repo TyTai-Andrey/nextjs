@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import { ModalContext } from '../components/ModalProvider/ModalContext';
+import { ModalContext } from '../compositions/ModalProvider/ModalContext';
 
 export interface ModalComponentProps {
   handleClose: () => void;

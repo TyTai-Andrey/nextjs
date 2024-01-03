@@ -1,0 +1,26 @@
+.label {
+  font-size: 20px;
+}
+.input {
+  border: 2px solid #5a5a5a;
+  border-radius: 10px;
+  height: 40px;
+  width: 10rem;
+  outline: none;
+  line-height: 20px;
+  font-size: 0.6rem;
+  padding: 10px 15px;
+}
+
+.errorBackgroundColorRed .input {
+  border: 2px solid red;
+}
+
+.error {
+  font-size: 14px;
+  line-height: 14px;
+  font-weight: 400;
+  margin-top: 5px;
+  padding-left: 2px;
+  color: red;
+}

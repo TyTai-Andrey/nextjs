@@ -1,0 +1,1 @@
+export { Paggination } from './Paggination';

@@ -7,12 +7,15 @@ const ReduxFieldAdapter = ({ children, input, meta, ...props }: any) =>
   children({
     ...input,
     ...props,
-    error: (meta.touched && meta.error) || props.error,
+    error: meta.touched && (meta.error || props.error),
   });
 
-const withReduxForm =
-  (FieldComponent: any, extraProps?: any) => (props: any) => {
-    const { children, id: idProp } = props;
+function withReduxForm<T>(FieldComponent: React.FC<T>, extraProps?: any) {
+  return (props: T & { name: string }) => {
+    const { children, id: idProp } = props as {
+      children?: React.ReactNode;
+      id?: number;
+    };
     const id = idProp || uuid();
 
     return (
@@ -25,6 +28,7 @@ const withReduxForm =
       </Field>
     );
   };
+}
 
 // Exports
 export default withReduxForm;

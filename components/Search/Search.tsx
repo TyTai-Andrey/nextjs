@@ -1,6 +1,6 @@
 import withReduxForm from '@utils/withReduxForm';
 import classNames from 'classnames';
-import React, { FC } from 'react';
+import React, { FC, LegacyRef, forwardRef, memo } from 'react';
 import styles from './Search.module.css';
 
 export interface SearchProps {
@@ -19,16 +19,16 @@ export interface SearchProps {
   placeholder: string;
 }
 
-export interface SearchInterface extends FC<SearchProps> {
-  Redux: typeof SearchRedux;
-}
-
-const Search: SearchInterface = ({ className, name, ...props }) => {
-  return <input className={classNames(styles.root, className)} {...props} />;
-};
-
-const SearchRedux = withReduxForm(Search);
-
-Search.Redux = SearchRedux;
-
-export default Search;
+export const Search = memo(
+  forwardRef<HTMLInputElement, SearchProps>(
+    ({ className, name, ...props }, ref) => {
+      return (
+        <input
+          ref={ref}
+          className={classNames(styles.root, className)}
+          {...props}
+        />
+      );
+    },
+  ),
+);

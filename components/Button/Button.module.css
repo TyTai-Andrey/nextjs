@@ -1,22 +1,29 @@
 .root {
-  background: rgb(46, 228, 241);
+  background: rgb(42, 177, 69);
+  border: 2px solid rgb(42, 177, 69);
 
   display: flex;
   justify-content: center;
   align-items: center;
 
-  height: 40px;
-  width: 260px;
+  width: max-content;
 
-  border: none;
+  padding: 5px 20px;
+
   outline: none;
   border-radius: 10px;
 }
 
 .root.short {
   width: 40px;
+  height: 40px;
+  padding: 0;
 }
 
 .root:hover {
-  background: rgb(37, 156, 165);
+  background: rgb(44, 212, 78);
+  border: 2px solid #272727;
+}
+.root:focus {
+  border: 2px solid #272727;
 }

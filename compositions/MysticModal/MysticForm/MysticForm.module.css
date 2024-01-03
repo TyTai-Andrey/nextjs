@@ -1,0 +1,54 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  height: calc(80dvh - 80px);
+  overflow-y: auto;
+  padding-right: 10px;
+}
+
+.root::-webkit-scrollbar {
+  width: 4px;
+}
+
+/* Track */
+.root::-webkit-scrollbar-track {
+  background: grey;
+  -webkit-border-radius: 10px;
+  border-radius: 10px;
+}
+
+/* Handle */
+.root::-webkit-scrollbar-thumb {
+  -webkit-border-radius: 10px;
+  border-radius: 10px;
+  background: black;
+}
+
+.checkbox {
+  display: flex;
+  align-items: center;
+}
+
+.checkbox input {
+  width: 20px;
+  height: 20px;
+  margin-left: 10px;
+}
+
+.input {
+  margin-bottom: 10px;
+  width: 100%;
+}
+
+.input input {
+  width: 100%;
+}
+
+.submit_button {
+  margin-top: auto;
+  margin-left: auto;
+}
+
+.submit_button:focus {
+  border: 2px solid #272727;
+}

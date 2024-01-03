@@ -1,18 +1,18 @@
-import PeopleApi from '@api/PeopleApi';
+import StarshipsApi from '@api/StarshipsApi';
 import { Paggination } from '@components/Paggination';
 import { DataList } from '@components/DataList';
-import { PeopleItemModel } from '@styles/interfaces';
+import { StarshipItemModel } from '@styles/interfaces';
 import { BaseParams, FilterResult, Replace } from '@typings/base';
 import { serverError } from '@utils/notifications';
 import { GetServerSidePropsContext, NextPage } from 'next';
 import { useEffect } from 'react';
 
-type IndexProps = {
-  peoples?: FilterResult<PeopleItemModel>;
+type StarshipsProps = {
+  starships?: FilterResult<StarshipItemModel>;
   isServerError: string;
 };
 
-const Index: NextPage<IndexProps> = ({ peoples, isServerError }) => {
+const Starships: NextPage<StarshipsProps> = ({ starships, isServerError }) => {
   useEffect(() => {
     if (isServerError) {
       serverError(isServerError);
@@ -21,26 +21,26 @@ const Index: NextPage<IndexProps> = ({ peoples, isServerError }) => {
 
   return (
     <>
-      <DataList data={peoples?.results} />
-      <Paggination count={peoples?.count} />
+      <DataList data={starships?.results} />
+      <Paggination count={starships?.count} />
     </>
   );
 };
 
-export default Index;
+export default Starships;
 
 export const getServerSideProps = async (
   ctx: Replace<GetServerSidePropsContext, 'query', BaseParams>,
 ) => {
   const { query } = ctx;
 
-  const peoples = await PeopleApi.getPeoplesList(query);
-  if (!peoples.isError)
+  const starships = await StarshipsApi.getStarshipsList(query);
+  if (!starships.isError)
     return {
-      props: { peoples },
+      props: { starships },
     };
 
   return {
-    props: { isServerError: peoples.message },
+    props: { isServerError: starships.message },
   };
 };
