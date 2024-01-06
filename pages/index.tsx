@@ -6,6 +6,7 @@ import { BaseParams, FilterResult, Replace } from '@typings/base';
 import { serverError } from '@utils/notifications';
 import { GetServerSidePropsContext, NextPage } from 'next';
 import { useEffect } from 'react';
+import Head from 'next/head';
 
 type IndexProps = {
   peoples?: FilterResult<PeopleItemModel>;
@@ -21,6 +22,9 @@ const Index: NextPage<IndexProps> = ({ peoples, isServerError }) => {
 
   return (
     <>
+      <Head>
+        <title>Peoples</title>
+      </Head>
       <DataList data={peoples?.results} />
       <Paggination count={peoples?.count} />
     </>

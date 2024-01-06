@@ -6,6 +6,7 @@ import { BaseParams, FilterResult, Replace } from '@typings/base';
 import { serverError } from '@utils/notifications';
 import { GetServerSidePropsContext, NextPage } from 'next';
 import { useEffect } from 'react';
+import Head from 'next/head';
 
 type StarshipsProps = {
   starships?: FilterResult<StarshipItemModel>;
@@ -21,6 +22,9 @@ const Starships: NextPage<StarshipsProps> = ({ starships, isServerError }) => {
 
   return (
     <>
+      <Head>
+        <title>Peoples</title>
+      </Head>
       <DataList data={starships?.results} />
       <Paggination count={starships?.count} />
     </>

@@ -1,9 +1,10 @@
 import FilmsApi from '@api/FilmsApi';
 import { DataList } from '@components/DataList';
-import { FilmItemModel } from '@styles/interfaces';
-import { Replace } from '@typings/base';
+import { FilmItemModel, StarshipItemModel } from '@styles/interfaces';
+import { FilterResult, Replace } from '@typings/base';
 import { serverError } from '@utils/notifications';
-import { GetServerSidePropsContext, NextPage } from 'next';
+import { GetStaticPropsContext, NextPage } from 'next';
+import { Head } from 'next/document';
 import { useEffect } from 'react';
 
 type IndexProps = {
@@ -18,6 +19,7 @@ const Index: NextPage<IndexProps> = ({ film, isServerError }) => {
     }
   }, []);
 
+  if (isServerError) return <div>Error</div>;
   if (!film) return <div>Не найдено</div>;
 
   return (
@@ -60,8 +62,19 @@ const Index: NextPage<IndexProps> = ({ film, isServerError }) => {
 
 export default Index;
 
-export const getServerSideProps = async (
-  ctx: Replace<GetServerSidePropsContext, 'params', { id: string }>,
+export const getStaticPaths = async () => {
+  const films = await FilmsApi.getFilmsList();
+
+  const paths = new Array((films as FilterResult<StarshipItemModel>).count)
+    .fill('')
+    .map((_, id) => ({
+      params: { id: String(id + 1) },
+    }));
+  return { paths, fallback: true };
+};
+
+export const getStaticProps = async (
+  ctx: Replace<GetStaticPropsContext, 'params', { id: string }>,
 ) => {
   const {
     params: { id },

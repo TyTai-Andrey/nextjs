@@ -6,6 +6,7 @@ import { serverError } from '@utils/notifications';
 import { GetServerSidePropsContext, NextPage } from 'next';
 import { useEffect } from 'react';
 import FilmsApi from '@api/FilmsApi';
+import Head from 'next/head';
 
 type FilmsProps = {
   films?: FilterResult<FilmItemModel>;
@@ -21,6 +22,9 @@ const Films: NextPage<FilmsProps> = ({ films, isServerError }) => {
 
   return (
     <>
+      <Head>
+        <title>Films</title>
+      </Head>
       <DataList data={films?.results} />
       <Paggination count={films?.count} />
     </>

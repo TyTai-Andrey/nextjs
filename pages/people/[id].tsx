@@ -1,9 +1,13 @@
 import PeopleApi from '@api/PeopleApi';
 import { DataList } from '@components/DataList';
 import { PeopleItemModel } from '@styles/interfaces';
-import { Replace } from '@typings/base';
+import { FilterResult, Replace } from '@typings/base';
 import { serverError } from '@utils/notifications';
-import { GetServerSidePropsContext, NextPage } from 'next';
+import {
+  GetServerSidePropsContext,
+  GetStaticPropsContext,
+  NextPage,
+} from 'next';
 import { useEffect } from 'react';
 
 type IndexProps = {
@@ -18,6 +22,7 @@ const Index: NextPage<IndexProps> = ({ people, isServerError }) => {
     }
   }, []);
 
+  if (isServerError) return <div>Error</div>;
   if (!people) return <div>Не найдено</div>;
 
   return (
@@ -60,8 +65,19 @@ const Index: NextPage<IndexProps> = ({ people, isServerError }) => {
 
 export default Index;
 
-export const getServerSideProps = async (
-  ctx: Replace<GetServerSidePropsContext, 'params', { id: string }>,
+export const getStaticPaths = async () => {
+  const peoples = await PeopleApi.getPeoplesList();
+
+  const paths = new Array((peoples as FilterResult<PeopleItemModel>).count)
+    .fill('')
+    .map((_, id) => ({
+      params: { id: String(id + 1) },
+    }));
+  return { paths, fallback: true };
+};
+
+export const getStaticProps = async (
+  ctx: Replace<GetStaticPropsContext, 'params', { id: string }>,
 ) => {
   const {
     params: { id },
