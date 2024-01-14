@@ -2,56 +2,51 @@ import StarshipsApi from '@api/StarshipsApi';
 import { DataList } from '@components/DataList';
 import { StarshipItemModel } from '@styles/interfaces';
 import { FilterResult, Replace } from '@typings/base';
-import { serverError } from '@utils/notifications';
 import {
-  GetServerSidePropsContext,
+  TypeReturnServerRenderDataItem,
+  returnServerRenderDataItem,
+} from '@utils/returnServerRenderData';
+import {
+  GetServerSidePropsResult,
   GetStaticPropsContext,
   NextPage,
 } from 'next';
-import { useEffect } from 'react';
+import { CheckErrorAndNotFound } from '../../compositions/CheckErrorAndNotFound';
 
-type IndexProps = {
-  starship: StarshipItemModel;
-  isServerError: string;
-};
+type IndexProps = TypeReturnServerRenderDataItem<StarshipItemModel>;
 
-const Index: NextPage<IndexProps> = ({ starship, isServerError }) => {
-  useEffect(() => {
-    if (isServerError) {
-      serverError(isServerError);
-    }
-  }, []);
-
-  if (isServerError) return <div>Error</div>;
-  if (!starship) return <div>Не найдено</div>;
-
+const Index: NextPage<IndexProps> = (props) => {
   return (
-    <div className='flex flex-col justify-between w-100%'>
-      <div className='flex justify-between border-b-2 border-sky-500 p-2'>
-        <div className='mr-1'>Название</div>
-        <div>{starship?.name}</div>
-      </div>
-      <div className='flex justify-between border-b-2 border-sky-500 p-2'>
-        <div className='mr-1'>Модель</div>
-        <div>{starship?.model}</div>
-      </div>
-      <div className='flex justify-between border-b-2 border-sky-500 p-2'>
-        <div className='mr-1'>Длина</div>
-        <div>{starship?.length}</div>
-      </div>
-      <div className='flex justify-between border-b-2 border-sky-500 p-2'>
-        <div className='mr-1'>Стоимость</div>
-        <div>{starship?.cost_in_credits}</div>
-      </div>
-      <div className='flex justify-between border-b-2 border-sky-500 p-2'>
-        <div className='mr-1'>Фильмы</div>
-        <DataList
-          noDriver
-          data={starship?.films?.map((i) => ({ url: i, title: i }))}
-          style={{ maxHeight: '5rem' }}
-        />
-      </div>
-    </div>
+    <CheckErrorAndNotFound {...props}>
+      {({ data }) => (
+        <div className='flex flex-col justify-between w-100%'>
+          <div className='flex justify-between border-b-2 border-sky-500 p-2'>
+            <div className='mr-1'>Название</div>
+            <div>{data.name}</div>
+          </div>
+          <div className='flex justify-between border-b-2 border-sky-500 p-2'>
+            <div className='mr-1'>Модель</div>
+            <div>{data.model}</div>
+          </div>
+          <div className='flex justify-between border-b-2 border-sky-500 p-2'>
+            <div className='mr-1'>Длина</div>
+            <div>{data.length}</div>
+          </div>
+          <div className='flex justify-between border-b-2 border-sky-500 p-2'>
+            <div className='mr-1'>Стоимость</div>
+            <div>{data.cost_in_credits}</div>
+          </div>
+          <div className='flex justify-between border-b-2 border-sky-500 p-2'>
+            <div className='mr-1'>Фильмы</div>
+            <DataList
+              noDriver
+              data={data.films?.map((i) => ({ url: i, title: i }))}
+              style={{ maxHeight: '5rem' }}
+            />
+          </div>
+        </div>
+      )}
+    </CheckErrorAndNotFound>
   );
 };
 
@@ -70,18 +65,15 @@ export const getStaticPaths = async () => {
 
 export const getStaticProps = async (
   ctx: Replace<GetStaticPropsContext, 'params', { id: string }>,
-) => {
+): Promise<
+  GetServerSidePropsResult<TypeReturnServerRenderDataItem<StarshipItemModel>>
+> => {
   const {
     params: { id },
   } = ctx;
-  const starship = await StarshipsApi.getOneStarship(id);
-
-  if (!starship.isError)
-    return {
-      props: { starship },
-    };
+  const data = await StarshipsApi.getOneStarship(id);
 
   return {
-    props: { isServerError: starship.message },
+    props: returnServerRenderDataItem(data),
   };
 };

@@ -3,48 +3,38 @@ import { DataList } from '@components/DataList';
 import { FilmItemModel } from '@styles/interfaces';
 import { BaseParams, FilterResult, Replace } from '@typings/base';
 import { serverError } from '@utils/notifications';
-import { GetServerSidePropsContext, NextPage } from 'next';
+import {
+  GetServerSidePropsContext,
+  GetServerSidePropsResult,
+  NextPage,
+} from 'next';
 import { useEffect } from 'react';
 import FilmsApi from '@api/FilmsApi';
 import Head from 'next/head';
+import {
+  TypeReturnServerRenderDataList,
+  returnServerRenderDataList,
+} from '@utils/returnServerRenderData';
+import { ListPage } from '../compositions/ListPage';
 
-type FilmsProps = {
-  films?: FilterResult<FilmItemModel>;
-  isServerError: string;
-};
+type FilmsProps = TypeReturnServerRenderDataList<FilmItemModel>;
 
-const Films: NextPage<FilmsProps> = ({ films, isServerError }) => {
-  useEffect(() => {
-    if (isServerError) {
-      serverError(isServerError);
-    }
-  }, []);
-
-  return (
-    <>
-      <Head>
-        <title>Films</title>
-      </Head>
-      <DataList data={films?.results} />
-      <Paggination count={films?.count} />
-    </>
-  );
-};
+const Films: NextPage<FilmsProps> = (props) => (
+  <ListPage {...props} headTitle='Films' />
+);
 
 export default Films;
 
 export const getServerSideProps = async (
   ctx: Replace<GetServerSidePropsContext, 'query', BaseParams>,
-) => {
+): Promise<
+  GetServerSidePropsResult<TypeReturnServerRenderDataList<FilmItemModel>>
+> => {
   const { query } = ctx;
 
-  const films = await FilmsApi.getFilmsList(query);
-  if (!films.isError)
-    return {
-      props: { films },
-    };
+  const data = await FilmsApi.getFilmsList(query);
 
   return {
-    props: { isServerError: films.message },
+    props: returnServerRenderDataList(data),
   };
 };

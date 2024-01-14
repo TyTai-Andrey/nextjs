@@ -1,50 +1,35 @@
 import PeopleApi from '@api/PeopleApi';
-import { Paggination } from '@components/Paggination';
-import { DataList } from '@components/DataList';
 import { PeopleItemModel } from '@styles/interfaces';
-import { BaseParams, FilterResult, Replace } from '@typings/base';
-import { serverError } from '@utils/notifications';
-import { GetServerSidePropsContext, NextPage } from 'next';
-import { useEffect } from 'react';
-import Head from 'next/head';
+import { BaseParams, Replace } from '@typings/base';
+import {
+  GetServerSidePropsContext,
+  GetServerSidePropsResult,
+  NextPage,
+} from 'next';
+import {
+  TypeReturnServerRenderDataList,
+  returnServerRenderDataList,
+} from '@utils/returnServerRenderData';
+import { ListPage } from '../compositions/ListPage';
 
-type IndexProps = {
-  peoples?: FilterResult<PeopleItemModel>;
-  isServerError: string;
-};
+type IndexProps = TypeReturnServerRenderDataList<PeopleItemModel>;
 
-const Index: NextPage<IndexProps> = ({ peoples, isServerError }) => {
-  useEffect(() => {
-    if (isServerError) {
-      serverError(isServerError);
-    }
-  }, []);
-
-  return (
-    <>
-      <Head>
-        <title>Peoples</title>
-      </Head>
-      <DataList data={peoples?.results} />
-      <Paggination count={peoples?.count} />
-    </>
-  );
-};
+const Index: NextPage<IndexProps> = (props) => (
+  <ListPage {...props} headTitle='Peoples' />
+);
 
 export default Index;
 
 export const getServerSideProps = async (
   ctx: Replace<GetServerSidePropsContext, 'query', BaseParams>,
-) => {
+): Promise<
+  GetServerSidePropsResult<TypeReturnServerRenderDataList<PeopleItemModel>>
+> => {
   const { query } = ctx;
 
-  const peoples = await PeopleApi.getPeoplesList(query);
-  if (!peoples.isError)
-    return {
-      props: { peoples },
-    };
+  const data = await PeopleApi.getPeoplesList(query);
 
   return {
-    props: { isServerError: peoples.message },
+    props: returnServerRenderDataList(data),
   };
 };

@@ -1,17 +1,19 @@
+import { AxiosError } from 'axios';
+
 export type N<T> = T | null;
 export type NA<T> = T | 'n/a';
 export type FilterResult<T> = {
   count: number;
-  isError?: false;
   next: N<string>;
   previous: N<string>;
   results: N<T[]>;
 };
 
-export interface ErrorResponse {
-  isError: true;
-  message: string;
-}
+export const isErrorResponse = <T>(
+  errorResponse: AxiosError | FilterResult<T> | T,
+): errorResponse is AxiosError =>
+  (errorResponse as AxiosError).message !== undefined &&
+  (errorResponse as AxiosError).response !== undefined;
 
 export interface BaseParams {
   search?: string;

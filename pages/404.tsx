@@ -1,13 +1,5 @@
-import Head from 'next/head';
+import { NotFoundBack } from '@components/NotFoundBack';
 
-const NotFound = () => {
-  return (
-    <>
-      <Head>
-        <title>NotFound 404</title>
-      </Head>
-      NotFound 404
-    </>
-  );
-};
+const NotFound = () => <NotFoundBack />;
+
 export default NotFound;

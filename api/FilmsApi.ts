@@ -1,7 +1,7 @@
 // import qs from 'qs';
-import { StarshipItemModel } from '@styles/interfaces';
-import { BaseParams, ErrorResponse, FilterResult } from '../typings/base';
-import { AxiosRequestConfig } from 'axios';
+import { FilmItemModel, StarshipItemModel } from '@styles/interfaces';
+import { BaseParams, FilterResult } from '../typings/base';
+import { AxiosError, AxiosRequestConfig } from 'axios';
 
 // Utils
 
@@ -11,7 +11,7 @@ import BaseApi from './BaseApi';
 export default class FilmsApi {
   static async getFilmsList(
     params?: BaseParams,
-  ): Promise<FilterResult<StarshipItemModel> | ErrorResponse> {
+  ): Promise<FilterResult<FilmItemModel> | AxiosError> {
     const client = BaseApi.getSwapiClient();
 
     const options: AxiosRequestConfig = {
@@ -23,19 +23,19 @@ export default class FilmsApi {
     try {
       const response = await client(options);
       return response.data;
-    } catch ({ message }) {
-      return { isError: true, message };
+    } catch (error) {
+      return error;
     }
   }
 
   static async getOneFilm(
     id: string | number,
-  ): Promise<(StarshipItemModel & { isError: false }) | ErrorResponse> {
+  ): Promise<FilmItemModel | AxiosError> {
     const client = BaseApi.getSwapiClient();
 
     return client
       .get(`/films/${id}`)
       .then((response) => response.data)
-      .catch(({ message }) => ({ isError: true, message }));
+      .catch((error) => error);
   }
 }

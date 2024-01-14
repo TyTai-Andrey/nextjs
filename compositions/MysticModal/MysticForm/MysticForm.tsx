@@ -10,10 +10,10 @@ import { useSelector } from 'react-redux';
 const FormComponent: FC<
   FormProps & InjectedFormProps<MysticFormProps, FormProps>
 > = ({ handleSubmit, onSubmit }) => {
-  const mysticFormValues: MysticFormProps = useSelector(
+  const { radio } = useSelector(
     (state) => getFormValues(FORM_NAME)(state),
     () => false,
-  );
+  ) as MysticFormProps;
 
   return (
     <Form className={styles.root} onSubmit={handleSubmit(onSubmit)}>
@@ -57,7 +57,7 @@ const FormComponent: FC<
         label='Start with this initial values (when submit)'
       />
 
-      {mysticFormValues.radio === 'setValues' && (
+      {radio === 'setValues' && (
         <>
           <InputRedux
             className={styles.input}

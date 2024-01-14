@@ -1,4 +1,4 @@
-const NotFound = () => {
+const Error = () => {
   return '_error';
 };
-export default NotFound;
+export default Error;

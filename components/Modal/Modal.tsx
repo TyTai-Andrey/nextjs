@@ -17,6 +17,11 @@ export interface ModalProps {
   style?: React.CSSProperties;
 }
 
+export interface ModalComponentProps {
+  handleClose: () => void;
+  isOpen: boolean;
+}
+
 export const Modal: FC<ModalProps> = ({
   children,
   className,

@@ -1,7 +1,7 @@
 // import qs from 'qs';
 import { StarshipItemModel } from '@styles/interfaces';
-import { BaseParams, ErrorResponse, FilterResult } from '../typings/base';
-import { AxiosRequestConfig } from 'axios';
+import { BaseParams, FilterResult } from '../typings/base';
+import { AxiosError, AxiosRequestConfig } from 'axios';
 
 // Utils
 
@@ -11,7 +11,7 @@ import BaseApi from './BaseApi';
 export default class StarshipsApi {
   static async getStarshipsList(
     params?: BaseParams,
-  ): Promise<FilterResult<StarshipItemModel> | ErrorResponse> {
+  ): Promise<FilterResult<StarshipItemModel> | AxiosError> {
     const client = BaseApi.getSwapiClient();
 
     const options: AxiosRequestConfig = {
@@ -23,14 +23,14 @@ export default class StarshipsApi {
     try {
       const response = await client(options);
       return response.data;
-    } catch ({ message }) {
-      return { isError: true, message };
+    } catch (error) {
+      return error;
     }
   }
 
   static async getOneStarship(
     id: string | number,
-  ): Promise<(StarshipItemModel & { isError: false }) | ErrorResponse> {
+  ): Promise<StarshipItemModel | AxiosError> {
     const client = BaseApi.getSwapiClient();
 
     return client

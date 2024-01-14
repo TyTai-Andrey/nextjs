@@ -2,64 +2,59 @@ import PeopleApi from '@api/PeopleApi';
 import { DataList } from '@components/DataList';
 import { PeopleItemModel } from '@styles/interfaces';
 import { FilterResult, Replace } from '@typings/base';
-import { serverError } from '@utils/notifications';
 import {
-  GetServerSidePropsContext,
+  GetServerSidePropsResult,
   GetStaticPropsContext,
   NextPage,
 } from 'next';
-import { useEffect } from 'react';
+import { CheckErrorAndNotFound } from '../../compositions/CheckErrorAndNotFound';
+import {
+  TypeReturnServerRenderDataItem,
+  returnServerRenderDataItem,
+} from '@utils/returnServerRenderData';
 
-type IndexProps = {
-  people: PeopleItemModel;
-  isServerError: string;
-};
+type IndexProps = TypeReturnServerRenderDataItem<PeopleItemModel>;
 
-const Index: NextPage<IndexProps> = ({ people, isServerError }) => {
-  useEffect(() => {
-    if (isServerError) {
-      serverError(isServerError);
-    }
-  }, []);
-
-  if (isServerError) return <div>Error</div>;
-  if (!people) return <div>Не найдено</div>;
-
+const Index: NextPage<IndexProps> = (props) => {
   return (
-    <div className='flex flex-col justify-between w-100%'>
-      <div className='flex justify-between border-b-2 border-sky-500 p-2'>
-        <div className='mr-1'>Имя</div>
-        <div>{people?.name}</div>
-      </div>
-      <div className='flex justify-between border-b-2 border-sky-500 p-2'>
-        <div className='mr-1'>Рост</div>
-        <div>{people?.height}</div>
-      </div>
-      <div className='flex justify-between border-b-2 border-sky-500 p-2'>
-        <div className='mr-1'>Вес</div>
-        <div>{people?.mass}</div>
-      </div>
-      <div className='flex justify-between border-b-2 border-sky-500 p-2'>
-        <div className='mr-1'>Пол</div>
-        <div>{people?.gender}</div>
-      </div>
-      <div className='flex justify-between border-b-2 border-sky-500 p-2'>
-        <div className='mr-1'>Звездолеты</div>
-        <DataList
-          noDriver
-          data={people?.starships?.map((i) => ({ url: i, title: i }))}
-          style={{ maxHeight: '5rem' }}
-        />
-      </div>
-      <div className='flex justify-between border-b-2 border-sky-500 p-2'>
-        <div className='mr-1'>Фильмы</div>
-        <DataList
-          noDriver
-          data={people?.films?.map((i) => ({ url: i, title: i }))}
-          style={{ maxHeight: '5rem' }}
-        />
-      </div>
-    </div>
+    <CheckErrorAndNotFound {...props}>
+      {({ data }) => (
+        <div className='flex flex-col justify-between w-100%'>
+          <div className='flex justify-between border-b-2 border-sky-500 p-2'>
+            <div className='mr-1'>Имя</div>
+            <div>{data.name}</div>
+          </div>
+          <div className='flex justify-between border-b-2 border-sky-500 p-2'>
+            <div className='mr-1'>Рост</div>
+            <div>{data.height}</div>
+          </div>
+          <div className='flex justify-between border-b-2 border-sky-500 p-2'>
+            <div className='mr-1'>Вес</div>
+            <div>{data.mass}</div>
+          </div>
+          <div className='flex justify-between border-b-2 border-sky-500 p-2'>
+            <div className='mr-1'>Пол</div>
+            <div>{data.gender}</div>
+          </div>
+          <div className='flex justify-between border-b-2 border-sky-500 p-2'>
+            <div className='mr-1'>Звездолеты</div>
+            <DataList
+              noDriver
+              data={data?.starships?.map((i) => ({ url: i, title: i }))}
+              style={{ maxHeight: '5rem' }}
+            />
+          </div>
+          <div className='flex justify-between border-b-2 border-sky-500 p-2'>
+            <div className='mr-1'>Фильмы</div>
+            <DataList
+              noDriver
+              data={data?.films?.map((i) => ({ url: i, title: i }))}
+              style={{ maxHeight: '5rem' }}
+            />
+          </div>
+        </div>
+      )}
+    </CheckErrorAndNotFound>
   );
 };
 
@@ -78,18 +73,15 @@ export const getStaticPaths = async () => {
 
 export const getStaticProps = async (
   ctx: Replace<GetStaticPropsContext, 'params', { id: string }>,
-) => {
+): Promise<
+  GetServerSidePropsResult<TypeReturnServerRenderDataItem<PeopleItemModel>>
+> => {
   const {
     params: { id },
   } = ctx;
-  const people = await PeopleApi.getOnePeople(id);
-
-  if (!people.isError)
-    return {
-      props: { people },
-    };
+  const data = await PeopleApi.getOnePeople(id);
 
   return {
-    props: { isServerError: people.message },
+    props: returnServerRenderDataItem(data),
   };
 };

@@ -1,62 +1,60 @@
 import FilmsApi from '@api/FilmsApi';
 import { DataList } from '@components/DataList';
-import { FilmItemModel, StarshipItemModel } from '@styles/interfaces';
+import { FilmItemModel } from '@styles/interfaces';
 import { FilterResult, Replace } from '@typings/base';
-import { serverError } from '@utils/notifications';
-import { GetStaticPropsContext, NextPage } from 'next';
-import { Head } from 'next/document';
-import { useEffect } from 'react';
+import {
+  TypeReturnServerRenderDataItem,
+  returnServerRenderDataItem,
+} from '@utils/returnServerRenderData';
+import {
+  GetServerSidePropsResult,
+  GetStaticPropsContext,
+  NextPage,
+} from 'next';
+import { CheckErrorAndNotFound } from '../../compositions/CheckErrorAndNotFound';
 
-type IndexProps = {
-  film: FilmItemModel;
-  isServerError: string;
-};
+type IndexProps = TypeReturnServerRenderDataItem<FilmItemModel>;
 
-const Index: NextPage<IndexProps> = ({ film, isServerError }) => {
-  useEffect(() => {
-    if (isServerError) {
-      serverError(isServerError);
-    }
-  }, []);
-
-  if (isServerError) return <div>Error</div>;
-  if (!film) return <div>Не найдено</div>;
-
+const Index: NextPage<IndexProps> = (props) => {
   return (
-    <>
-      <div className='flex justify-between border-b-2 border-sky-500 p-2'>
-        <div className='mr-1'>Название</div>
-        <div>{film?.title}</div>
-      </div>
-      <div className='flex justify-between border-b-2 border-sky-500 p-2'>
-        <div className='mr-1'>Директор</div>
-        <div>{film?.director}</div>
-      </div>
-      <div className='flex justify-between border-b-2 border-sky-500 p-2'>
-        <div className='mr-1'>Продюсер</div>
-        <div>{film?.producer}</div>
-      </div>
-      <div className='flex justify-between border-b-2 border-sky-500 p-2'>
-        <div className='mr-1'>Люди</div>
-        <DataList
-          noDriver
-          data={film?.characters?.map((i) => ({ url: i, title: i }))}
-          style={{
-            maxHeight: '5rem',
-          }}
-        />
-      </div>
-      <div className='flex justify-between border-b-2 border-sky-500 p-2'>
-        <div className='mr-1'>Звездолеты</div>
-        <DataList
-          noDriver
-          data={film?.starships?.map((i) => ({ url: i, title: i }))}
-          style={{
-            maxHeight: '5rem',
-          }}
-        />
-      </div>
-    </>
+    <CheckErrorAndNotFound {...props}>
+      {({ data }) => (
+        <>
+          <div className='flex justify-between border-b-2 border-sky-500 p-2'>
+            <div className='mr-1'>Название</div>
+            <div>{data?.title}</div>
+          </div>
+          <div className='flex justify-between border-b-2 border-sky-500 p-2'>
+            <div className='mr-1'>Директор</div>
+            <div>{data?.director}</div>
+          </div>
+          <div className='flex justify-between border-b-2 border-sky-500 p-2'>
+            <div className='mr-1'>Продюсер</div>
+            <div>{data?.producer}</div>
+          </div>
+          <div className='flex justify-between border-b-2 border-sky-500 p-2'>
+            <div className='mr-1'>Люди</div>
+            <DataList
+              noDriver
+              data={data?.characters?.map((i) => ({ url: i, title: i }))}
+              style={{
+                maxHeight: '5rem',
+              }}
+            />
+          </div>
+          <div className='flex justify-between border-b-2 border-sky-500 p-2'>
+            <div className='mr-1'>Звездолеты</div>
+            <DataList
+              noDriver
+              data={data?.starships?.map((i) => ({ url: i, title: i }))}
+              style={{
+                maxHeight: '5rem',
+              }}
+            />
+          </div>
+        </>
+      )}
+    </CheckErrorAndNotFound>
   );
 };
 
@@ -65,7 +63,7 @@ export default Index;
 export const getStaticPaths = async () => {
   const films = await FilmsApi.getFilmsList();
 
-  const paths = new Array((films as FilterResult<StarshipItemModel>).count)
+  const paths = new Array((films as FilterResult<FilmItemModel>).count)
     .fill('')
     .map((_, id) => ({
       params: { id: String(id + 1) },
@@ -75,18 +73,15 @@ export const getStaticPaths = async () => {
 
 export const getStaticProps = async (
   ctx: Replace<GetStaticPropsContext, 'params', { id: string }>,
-) => {
+): Promise<
+  GetServerSidePropsResult<TypeReturnServerRenderDataItem<FilmItemModel>>
+> => {
   const {
     params: { id },
   } = ctx;
-  const film = await FilmsApi.getOneFilm(id);
-
-  if (!film.isError)
-    return {
-      props: { film },
-    };
+  const data = await FilmsApi.getOneFilm(id);
 
   return {
-    props: { isServerError: film.message },
+    props: returnServerRenderDataItem(data),
   };
 };

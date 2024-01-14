@@ -1,50 +1,35 @@
 import StarshipsApi from '@api/StarshipsApi';
-import { Paggination } from '@components/Paggination';
-import { DataList } from '@components/DataList';
 import { StarshipItemModel } from '@styles/interfaces';
-import { BaseParams, FilterResult, Replace } from '@typings/base';
-import { serverError } from '@utils/notifications';
-import { GetServerSidePropsContext, NextPage } from 'next';
-import { useEffect } from 'react';
-import Head from 'next/head';
+import { BaseParams, Replace } from '@typings/base';
+import {
+  GetServerSidePropsContext,
+  GetServerSidePropsResult,
+  NextPage,
+} from 'next';
+import {
+  TypeReturnServerRenderDataList,
+  returnServerRenderDataList,
+} from '@utils/returnServerRenderData';
+import { ListPage } from '../compositions/ListPage';
 
-type StarshipsProps = {
-  starships?: FilterResult<StarshipItemModel>;
-  isServerError: string;
-};
+type StarshipsProps = TypeReturnServerRenderDataList<StarshipItemModel>;
 
-const Starships: NextPage<StarshipsProps> = ({ starships, isServerError }) => {
-  useEffect(() => {
-    if (isServerError) {
-      serverError(isServerError);
-    }
-  }, []);
-
-  return (
-    <>
-      <Head>
-        <title>Peoples</title>
-      </Head>
-      <DataList data={starships?.results} />
-      <Paggination count={starships?.count} />
-    </>
-  );
-};
+const Starships: NextPage<StarshipsProps> = (props) => (
+  <ListPage {...props} headTitle='Starships' />
+);
 
 export default Starships;
 
 export const getServerSideProps = async (
   ctx: Replace<GetServerSidePropsContext, 'query', BaseParams>,
-) => {
+): Promise<
+  GetServerSidePropsResult<TypeReturnServerRenderDataList<StarshipItemModel>>
+> => {
   const { query } = ctx;
 
-  const starships = await StarshipsApi.getStarshipsList(query);
-  if (!starships.isError)
-    return {
-      props: { starships },
-    };
+  const data = await StarshipsApi.getStarshipsList(query);
 
   return {
-    props: { isServerError: starships.message },
+    props: returnServerRenderDataList(data),
   };
 };

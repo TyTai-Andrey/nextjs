@@ -5,16 +5,16 @@ import classNames from 'classnames';
 
 type DataItem = { url: string; title?: string; name?: string };
 
-interface DataListProps<RecordType> {
-  data: RecordType[];
+interface DataListProps<T> {
+  data: T[];
   className?: string;
   noDriver?: boolean;
   style?: React.CSSProperties;
 }
 [];
 
-declare const MemoDataList: <RecordType extends DataItem>(
-  props: DataListProps<RecordType>,
+declare const MemoDataList: <T extends DataItem>(
+  props: DataListProps<T>,
 ) => React.ReactElement;
 
 type DataListType = typeof MemoDataList;
@@ -25,8 +25,7 @@ export const DataList: DataListType = memo(
 
     const onClickHandler = (url: string) => {
       const path = url.replace(/https:\/\/swapi.dev\/api/, '');
-
-      pushRouter(path, {});
+      pushRouter(path);
     };
 
     return (

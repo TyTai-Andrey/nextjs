@@ -1,5 +1,6 @@
 import React, { useCallback, useState } from 'react';
 import { ModalContext } from './ModalContext';
+import { OpenModal } from './ModalContext/ModalContext';
 
 type ModalProviderState = {
   modal: React.FC | null;
@@ -16,8 +17,8 @@ const initialState = {
 export const ModalProvider = ({ children }: { children: React.ReactNode }) => {
   const [state, setState] = useState<ModalProviderState>(initialState);
   const Component = state.modal ? state.modal : null;
-  const openModal = useCallback(
-    (modal: React.FC<any>, modalProps: any = {}) => {
+  const openModal: OpenModal = useCallback(
+    (modal, modalProps) => {
       document.body.style.overflow = 'hidden';
 
       setState({

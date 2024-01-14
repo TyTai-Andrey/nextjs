@@ -1,7 +1,6 @@
 import React, { FC } from 'react';
 import styles from './MysticModal.module.css';
-import { Modal } from '@components/Modal';
-import { ModalComponentProps } from '@utils/useModal';
+import { Modal, ModalComponentProps } from '@components/Modal';
 import { FORM_NAME, MysticForm, MysticFormProps, schema } from './MysticForm';
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -46,7 +45,7 @@ export const MysticModal: FC<MysticModalProps> = ({ isOpen, handleClose }) => {
             action: mysticFormValues?.inital_action,
             quantity: mysticFormValues?.inital_quantity,
             radio: 'save',
-          } as MysticFormProps),
+          }),
         );
       }
 
